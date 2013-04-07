@@ -15,8 +15,6 @@ char* bgm[]={"Sound\\Hondon.mid","Sound\\Juraona.mid","Sound\\Book.mid","Sound\\
 char answer[9];
 int answer_max;
 
-bool gameover = false;
-
 #define _GetKeyState( vkey ) HIBYTE(GetAsyncKeyState( vkey ))
 
 //종족과의 대화
@@ -760,10 +758,9 @@ int CDlg::TextPrint(char* content, int y, int back)
 	bool ani_end=false;
 
 	//얼굴 알아내기
-	char tmp[3];
+	char tmp[4] = {NULL, NULL, NULL, NULL};
 	for(int i=0; i<2; i++)
 		tmp[i]=dlg_buffer[i];
-	tmp[2]=NULL;
 	face=atoi(tmp);
 
 	//대화를 출력하기 알맞게 처리
@@ -790,7 +787,7 @@ int CDlg::TextPrint(char* content, int y, int back)
 
 	sp=SNR_START;
 	int n_of_e=0, tp=0;	//줄바꿈 횟수, 출력하는 단어
-	while(gameover)
+	while(1)
 	{
 		if(PeekMessage(&msg,NULL,0,0,PM_NOREMOVE))
 		{
