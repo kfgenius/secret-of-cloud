@@ -1877,6 +1877,14 @@ LRESULT CALLBACK WndProc(HWND wnd,UINT msg,WPARAM wParam,LPARAM lParam)
 		case WM_MOVE		 :	if(jdd)jdd->OnMove(LOWORD(lParam), HIWORD(lParam));
 								break;
 		
+		case WM_SIZE		 :	if(wParam == SIZE_MINIMIZED)activate=false;
+								else activate=true;
+								break;
+		
+		case WM_ACTIVATE	 : if(LOWORD(wParam))activate=true;
+								else activate=false;
+							   break;
+
 		case WM_SYSCOMMAND	 :  //닫기 메시지 가로채기
 								if(wParam==SC_CLOSE)
 								{
