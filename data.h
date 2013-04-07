@@ -15,7 +15,9 @@ char* bgm[]={"Sound\\Hondon.mid","Sound\\Juraona.mid","Sound\\Book.mid","Sound\\
 char answer[9];
 int answer_max;
 
-#define _GetKeyState( vkey ) HIBYTE(GetAsyncKeyState( vkey ))
+bool activate = true;
+
+#define _GetKeyState( vkey )	HIBYTE(GetAsyncKeyState( vkey )) && activate
 
 //종족과의 대화
 #define TRIBE_SKY			m_party.IsIt(12) || m_party.IsIt(11)
