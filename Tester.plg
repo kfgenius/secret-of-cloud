@@ -1,0 +1,40 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: Tester - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\¹Úµ¿Èï\LOCALS~1\Temp\RSP8.tmp" with contents
+[
+/nologo /MLd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"Debug/Tester.pch" /YX /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"C:\Program Files\Microsoft Visual Studio\My Projects\¾ÆÄÉÀÌµåRPG\arcade\Tester.cpp"
+]
+Creating command line "cl.exe @"C:\DOCUME~1\¹Úµ¿Èï\LOCALS~1\Temp\RSP8.tmp"" 
+Creating temporary file "C:\DOCUME~1\¹Úµ¿Èï\LOCALS~1\Temp\RSP9.tmp" with contents
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:yes /pdb:"Debug/Tester.pdb" /debug /machine:I386 /out:"Debug/Tester.exe" /pdbtype:sept 
+".\Debug\Tester.obj"
+]
+Creating command line "link.exe @"C:\DOCUME~1\¹Úµ¿Èï\LOCALS~1\Temp\RSP9.tmp""
+<h3>Output Window</h3>
+Compiling...
+Tester.cpp
+Linking...
+Tester.obj : error LNK2001: unresolved external symbol "public: __thiscall JPictureInfo::~JPictureInfo(void)" (??1JPictureInfo@@QAE@XZ)
+Tester.obj : error LNK2001: unresolved external symbol "public: void __thiscall JPictureInfo::SetColorKey(struct JColor)" (?SetColorKey@JPictureInfo@@QAEXUJColor@@@Z)
+Tester.obj : error LNK2001: unresolved external symbol "public: __thiscall JPictureInfo::JPictureInfo(void)" (??0JPictureInfo@@QAE@XZ)
+Tester.obj : error LNK2001: unresolved external symbol "public: void __thiscall JPictureInfo::SetOpacity(float)" (?SetOpacity@JPictureInfo@@QAEXM@Z)
+Tester.obj : error LNK2001: unresolved external symbol "struct JDirectSound * __cdecl CreateDirectSound(void)" (?CreateDirectSound@@YAPAUJDirectSound@@XZ)
+Tester.obj : error LNK2001: unresolved external symbol "struct JDirectDraw * __cdecl CreateDirectDraw(void)" (?CreateDirectDraw@@YAPAUJDirectDraw@@XZ)
+Debug/Tester.exe : fatal error LNK1120: 6 unresolved externals
+Error executing link.exe.
+
+
+
+<h3>Results</h3>
+Tester.exe - 7 error(s), 0 warning(s)
+</pre>
+</body>
+</html>
