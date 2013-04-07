@@ -59,14 +59,14 @@ int SelectLine(int start)
 
 		//출력
 		//===========================================
-		jdd->DrawPicture(backbuffer,"WorldMap",0,0,NULL);
+		jdd->DrawPicture(SCREEN_BUFFER,"WorldMap",0,0,NULL);
 		//공항 표시
 		for(int i=0; i<5; i++)
 		{
 			if(i==start || i==selected_line)
-				jdd->DrawPicture(backbuffer,"Airport_s",airport_x[i]-16,airport_y[i]-16,NULL);
+				jdd->DrawPicture(SCREEN_BUFFER,"Airport_s",airport_x[i]-16,airport_y[i]-16,NULL);
 			else
-				jdd->DrawPicture(backbuffer,"Airport_u",airport_x[i]-16,airport_y[i]-16,NULL);
+				jdd->DrawPicture(SCREEN_BUFFER,"Airport_u",airport_x[i]-16,airport_y[i]-16,NULL);
 		}
 		//바람길 표시
 		airline_start++;
@@ -75,7 +75,7 @@ int SelectLine(int start)
 		{
 			int bx=airport_x[start]+((airport_x[selected_line]-airport_x[start])*i/100);
 			int by=airport_y[start]+((airport_y[selected_line]-airport_y[start])*i/100);
-			jdd->DrawPicture(backbuffer,"Airline",bx-4,by-3,NULL);
+			jdd->DrawPicture(SCREEN_BUFFER,"Airline",bx-4,by-3,NULL);
 		}
 		Render();
 
@@ -175,29 +175,29 @@ int Fight(int player1, int player2)
 		}
 
 		for(int j=0; j<8; j++)
-			jdd->DrawPicture(backbuffer,"Black",0,j*20,NULL);
+			jdd->DrawPicture(SCREEN_BUFFER,"Black",0,j*20,NULL);
 		//정보
 		for(int i=0; i<2; i++)
 		{
 			//체력
 			if(player[i].hp==m_sv.var[VAR_HP+player[i].id])
-				jdd->DrawText(backbuffer,StrAdd("cd","체력 ",player[i].hp),font20,i*160,0,JColor(0,0,255));
+				jdd->DrawText(SCREEN_BUFFER,StrAdd("cd","체력 ",player[i].hp),font20,i*160,0,JColor(0,0,255));
 			else if(player[i].hp<=(m_sv.var[VAR_HP+player[i].id]/5))
-				jdd->DrawText(backbuffer,StrAdd("cd","체력 ",player[i].hp),font20,i*160,0,JColor(255,0,0));
+				jdd->DrawText(SCREEN_BUFFER,StrAdd("cd","체력 ",player[i].hp),font20,i*160,0,JColor(255,0,0));
 			else
-				jdd->DrawText(backbuffer,StrAdd("cd","체력 ",player[i].hp),font20,i*160,0,JColor(255,255,255));
+				jdd->DrawText(SCREEN_BUFFER,StrAdd("cd","체력 ",player[i].hp),font20,i*160,0,JColor(255,255,255));
 			//힘
-			jdd->DrawText(backbuffer,StrAdd("cd","힘   ",player[i].str),font20,i*160,20,JColor(255,255,255));
+			jdd->DrawText(SCREEN_BUFFER,StrAdd("cd","힘   ",player[i].str),font20,i*160,20,JColor(255,255,255));
 			//민첩
-			jdd->DrawText(backbuffer,StrAdd("cd","민첩 ",player[i].agl),font20,i*160,40,JColor(255,255,255));
+			jdd->DrawText(SCREEN_BUFFER,StrAdd("cd","민첩 ",player[i].agl),font20,i*160,40,JColor(255,255,255));
 			//준비
 			int ready=Max(0,player[i].ready);
 			if(player[i].ready<100)
-				jdd->DrawText(backbuffer,StrAdd("cdc","준비 ",ready,"%"),font20,i*160,60,JColor(255,255,255));
+				jdd->DrawText(SCREEN_BUFFER,StrAdd("cdc","준비 ",ready,"%"),font20,i*160,60,JColor(255,255,255));
 			else
-				jdd->DrawText(backbuffer,"준비 100%",font20,i*160,60,JColor(255,255,0));
+				jdd->DrawText(SCREEN_BUFFER,"준비 100%",font20,i*160,60,JColor(255,255,0));
 			//얼굴
-			jdd->DrawPicture(backbuffer,StrAdd("cd","Face",player[i].id+1),i*160,90,NULL);
+			jdd->DrawPicture(SCREEN_BUFFER,StrAdd("cd","Face",player[i].id+1),i*160,90,NULL);
 		}
 		Render();
 		if(player[0].hp<=0 || player[1].hp<=0)break;	//출력후 나가게 여기에 두었음
@@ -340,7 +340,7 @@ int Gamble()
 	for(int shot=0; shot<16; shot++)
 	{
 		for(int j=0; j<8; j++)
-			jdd->DrawPicture(backbuffer,"Black",0,j*20,NULL);
+			jdd->DrawPicture(SCREEN_BUFFER,"Black",0,j*20,NULL);
 
 		//소지금
 		int put_money=m_sv.var[VAR_MONEY];
@@ -350,17 +350,17 @@ int Gamble()
 			put_money/=10;
 			px-=11;
 		}
-		jdd->DrawText(backbuffer,StrAdd("dc",m_sv.var[VAR_MONEY],"카오"),font12,px+1,140,JColor(0,0,0));
-		jdd->DrawText(backbuffer,StrAdd("dc",m_sv.var[VAR_MONEY],"카오"),font12,px,139,JColor(255,255,0));
+		jdd->DrawText(SCREEN_BUFFER,StrAdd("dc",m_sv.var[VAR_MONEY],"카오"),font12,px+1,140,JColor(0,0,0));
+		jdd->DrawText(SCREEN_BUFFER,StrAdd("dc",m_sv.var[VAR_MONEY],"카오"),font12,px,139,JColor(255,255,0));
 
 		//얼굴
-		jdd->DrawPicture(backbuffer,"Face0",0,90,NULL);
-		jdd->DrawText(backbuffer,StrAdd("d",score[0]),font20,55,140,JColor(255,255,255));
-		jdd->DrawPicture(backbuffer,"Face30",265,0,NULL);
+		jdd->DrawPicture(SCREEN_BUFFER,"Face0",0,90,NULL);
+		jdd->DrawText(SCREEN_BUFFER,StrAdd("d",score[0]),font20,55,140,JColor(255,255,255));
+		jdd->DrawPicture(SCREEN_BUFFER,"Face30",265,0,NULL);
 		if(score[1]<10)
-			jdd->DrawText(backbuffer,StrAdd("d",score[1]),font20,253,50,JColor(255,255,255));
+			jdd->DrawText(SCREEN_BUFFER,StrAdd("d",score[1]),font20,253,50,JColor(255,255,255));
 		else
-			jdd->DrawText(backbuffer,StrAdd("d",score[1]),font20,241,50,JColor(255,255,255));
+			jdd->DrawText(SCREEN_BUFFER,StrAdd("d",score[1]),font20,241,50,JColor(255,255,255));
 
 		//자기 카드 뽑기
 		CCommand m_card(1);
@@ -399,14 +399,14 @@ int Gamble()
 				else score[0]+=2;
 		}
 
-		jdd->DrawPicture(backbuffer,StrAdd("cd","Card",use_card),140,90,NULL);
-		jdd->DrawPicture(backbuffer,StrAdd("cd","Card",dealer_card),140,10,NULL);
+		jdd->DrawPicture(SCREEN_BUFFER,StrAdd("cd","Card",use_card),140,90,NULL);
+		jdd->DrawPicture(SCREEN_BUFFER,StrAdd("cd","Card",dealer_card),140,10,NULL);
 		Render();
 		Sleep(1000);
 	}
 	//마지막 결과 보여주기
 	for(int j=0; j<8; j++)
-		jdd->DrawPicture(backbuffer,"Black",0,j*20,NULL);
+		jdd->DrawPicture(SCREEN_BUFFER,"Black",0,j*20,NULL);
 	int put_money=m_sv.var[VAR_MONEY];
 	int px=276;
 	while(put_money>=10)
@@ -414,18 +414,18 @@ int Gamble()
 		put_money/=10;
 		px-=11;
 	}
-	jdd->DrawText(backbuffer,StrAdd("dc",m_sv.var[VAR_MONEY],"카오"),font12,px+1,140,JColor(0,0,0));
-	jdd->DrawText(backbuffer,StrAdd("dc",m_sv.var[VAR_MONEY],"카오"),font12,px,139,JColor(255,255,0));
+	jdd->DrawText(SCREEN_BUFFER,StrAdd("dc",m_sv.var[VAR_MONEY],"카오"),font12,px+1,140,JColor(0,0,0));
+	jdd->DrawText(SCREEN_BUFFER,StrAdd("dc",m_sv.var[VAR_MONEY],"카오"),font12,px,139,JColor(255,255,0));
 
-	jdd->DrawPicture(backbuffer,"Face0",0,90,NULL);
-	jdd->DrawText(backbuffer,StrAdd("d",score[0]),font20,55,140,JColor(255,255,255));
-	jdd->DrawPicture(backbuffer,"Face30",265,0,NULL);
+	jdd->DrawPicture(SCREEN_BUFFER,"Face0",0,90,NULL);
+	jdd->DrawText(SCREEN_BUFFER,StrAdd("d",score[0]),font20,55,140,JColor(255,255,255));
+	jdd->DrawPicture(SCREEN_BUFFER,"Face30",265,0,NULL);
 	if(score[1]<10)
-		jdd->DrawText(backbuffer,StrAdd("d",score[1]),font20,253,50,JColor(255,255,255));
+		jdd->DrawText(SCREEN_BUFFER,StrAdd("d",score[1]),font20,253,50,JColor(255,255,255));
 	else
-		jdd->DrawText(backbuffer,StrAdd("d",score[1]),font20,241,50,JColor(255,255,255));
-	jdd->DrawPicture(backbuffer,StrAdd("cd","Card",use_card),140,90,NULL);
-	jdd->DrawPicture(backbuffer,StrAdd("cd","Card",dealer_card),140,10,NULL);
+		jdd->DrawText(SCREEN_BUFFER,StrAdd("d",score[1]),font20,241,50,JColor(255,255,255));
+	jdd->DrawPicture(SCREEN_BUFFER,StrAdd("cd","Card",use_card),140,90,NULL);
+	jdd->DrawPicture(SCREEN_BUFFER,StrAdd("cd","Card",dealer_card),140,10,NULL);
 
 	int victory=score[0]-score[1];
 	if(victory>0)m_dlg.TextPut(StrAdd("cdc","-1000당신이 ",victory,"점 차로 이겼습니다."));
@@ -767,18 +767,14 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstancem, LPSTR lpCmdLine, int 
 	}
 	else SoundCard = FALSE;
 
-	//셋업 정보 부르기
-	FILE *fp;
-	if(fp = fopen("setup.sav","rb"))
-	{
-		fread(&m_640,sizeof(BOOL),1,fp);
-		fclose(fp);
-	}
-
-	//if(m_640)jdd->Initialize(NULL,hwnd,640,480,16,true);
-	//	else jdd->Initialize(NULL,hwnd,320,240,16,true);
 	jdd->Initialize(NULL,hwnd,SCREEN_X,SCREEN_Y,16,true,window_mode);
 	
+	//임시 서페이스 생성
+	JPictureInfo jpi;
+	jpi.SetWidth(SCREEN_X);
+	jpi.SetHeight(SCREEN_Y);
+	jdd->CreateSurface(SCREEN_BUFFER, &jpi, TRUE);
+
 	//윈도우창 이동
 	if(window_mode)
 	{
@@ -787,7 +783,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstancem, LPSTR lpCmdLine, int 
 	}
 
 	//초기화
-	backbuffer=jdd->GetBackBuffer();
+	backbuffer = jdd->GetBackBuffer();
 	font20=jdd->CreateFont("굴림체",20,true,false,false,false,false);
 	font12=jdd->CreateFont("HY엽서L",15,true,false,false,false,false);
 	font10=jdd->CreateFont("HY견고딕",12,false,false,false,false,false);
@@ -1736,12 +1732,12 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstancem, LPSTR lpCmdLine, int 
 				}
 			}
 			else enter=false;
-			jdd->DrawPicture(backbuffer,StrAdd("cd","Map",m_sv.var[VAR_SPOT]),0,0,NULL);
-			if(m_sv.var[VAR_SPOT]==0 && m_sv.sw[SW_ITEM+8])jdd->DrawPicture(backbuffer,"Hole",32*5,32*3,NULL);
-			jdd->DrawPicture(backbuffer,"Cursor",cx*32+16,cy*32+16,NULL);
-			jdd->DrawText(backbuffer,StrAdd("dcdcdcdc",m_sv.var[VAR_TIME],"년 ",m_sv.var[VAR_TIME+1],"월 ",
+			jdd->DrawPicture(SCREEN_BUFFER,StrAdd("cd","Map",m_sv.var[VAR_SPOT]),0,0,NULL);
+			if(m_sv.var[VAR_SPOT]==0 && m_sv.sw[SW_ITEM+8])jdd->DrawPicture(SCREEN_BUFFER,"Hole",32*5,32*3,NULL);
+			jdd->DrawPicture(SCREEN_BUFFER,"Cursor",cx*32+16,cy*32+16,NULL);
+			jdd->DrawText(SCREEN_BUFFER,StrAdd("dcdcdcdc",m_sv.var[VAR_TIME],"년 ",m_sv.var[VAR_TIME+1],"월 ",
 				m_sv.var[VAR_TIME+2],"일 ",m_sv.var[VAR_TIME+3],"시"),font12,1,1,JColor(0,0,0));
-			jdd->DrawText(backbuffer,global_buffer,font12,0,0,JColor(255,128,0));
+			jdd->DrawText(SCREEN_BUFFER,global_buffer,font12,0,0,JColor(255,128,0));
 			int put_money=m_sv.var[VAR_MONEY];
 			int px=276;
 			while(put_money>=10)
@@ -1750,8 +1746,8 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstancem, LPSTR lpCmdLine, int 
 				px-=11;
 			}
 
-			jdd->DrawText(backbuffer,StrAdd("dc",m_sv.var[VAR_MONEY],"카오"),font12,px+1,1,JColor(0,0,0));
-			jdd->DrawText(backbuffer,StrAdd("dc",m_sv.var[VAR_MONEY],"카오"),font12,px,0,JColor(196,196,0));
+			jdd->DrawText(SCREEN_BUFFER,StrAdd("dc",m_sv.var[VAR_MONEY],"카오"),font12,px+1,1,JColor(0,0,0));
+			jdd->DrawText(SCREEN_BUFFER,StrAdd("dc",m_sv.var[VAR_MONEY],"카오"),font12,px,0,JColor(196,196,0));
 			Render();
 			
 			//메뉴
@@ -1775,7 +1771,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstancem, LPSTR lpCmdLine, int 
 
 		//메인메뉴
 		_MidiPlay(bgm[6]);
-		jdd->DrawPicture(backbuffer,"Title",0,0,NULL);
+		jdd->DrawPicture(SCREEN_BUFFER,"Title",0,0,NULL);
 		Render();
 		Sleep(1000);
 		while(m_sv.sw[SW_QUIT])
@@ -1791,7 +1787,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstancem, LPSTR lpCmdLine, int 
 				m_sv.SetVar(VAR_SPOT,VAR_MONEY,0);
 				m_sv.SetVars(VAR_RANK,VAR_RANK+9,1,2,3,4,5,6,7,8,9,10);	//격투 랭킹
 				//시작 시나리오
-				jdd->DrawPicture(backbuffer,"Map0",0,0,NULL);
+				jdd->DrawPicture(SCREEN_BUFFER,"Map0",0,0,NULL);
 				m_dlg.TextSnr(0);
 				//시작하는 때: 54년 5월 1일 7시
 				m_sv.SetVars(VAR_TIME,VAR_TIME+3,54,5,1,7);
