@@ -48,7 +48,7 @@ int SelectLine(int start)
 	int selected_line=0;
 	int airline_start=0;
 
-	while(gameover)
+	while(1)
 	{
 		if(PeekMessage(&msg,NULL,0,0,PM_NOREMOVE))
 		{
@@ -165,7 +165,7 @@ int Fight(int player1, int player2)
 	}
 
 	int select=0;
-	while(gameover)
+	while(1)
 	{
 		if(PeekMessage(&msg,NULL,0,0,PM_NOREMOVE))
 		{
@@ -864,7 +864,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstancem, LPSTR lpCmdLine, int 
 
 	m_sv.sw[SW_QUIT]=true;
 	bool end=false;
-	while(!end && !gameover)
+	while(!end)
 	{
 		//게임 진행
 		int cx=5, cy=2;
@@ -1871,7 +1871,7 @@ LRESULT CALLBACK WndProc(HWND wnd,UINT msg,WPARAM wParam,LPARAM lParam)
 {
     switch ( msg )
     {
-		case MM_MCINOTIFY    :   if ( ReplayFlag && wParam == MCI_NOTIFY_SUCCESSFUL ) _MidiReplay();
+		case MM_MCINOTIFY    :  if ( ReplayFlag && wParam == MCI_NOTIFY_SUCCESSFUL ) _MidiReplay();
 								break;
 
 		case WM_MOVE		 :	if(jdd)jdd->OnMove(LOWORD(lParam), HIWORD(lParam));
@@ -1881,7 +1881,7 @@ LRESULT CALLBACK WndProc(HWND wnd,UINT msg,WPARAM wParam,LPARAM lParam)
 								if(wParam==SC_CLOSE)
 								{
 									wParam=0;
-									gameover=TRUE;
+									exit(0);
 								}
 								break;
 
