@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Cloud", "JLib20LE.vcproj", "{BA33E705-7715-4E9B-BA96-826015BC2799}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BA33E705-7715-4E9B-BA96-826015BC2799}.Debug|Win32.ActiveCfg = Debug|Win32
+		{BA33E705-7715-4E9B-BA96-826015BC2799}.Debug|Win32.Build.0 = Debug|Win32
+		{BA33E705-7715-4E9B-BA96-826015BC2799}.Release|Win32.ActiveCfg = Release|Win32
+		{BA33E705-7715-4E9B-BA96-826015BC2799}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
