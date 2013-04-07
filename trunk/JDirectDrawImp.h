@@ -114,6 +114,10 @@ protected:
 	static __int64 qfreq;
 	__int64 fpsfreq,lastdraw;
 	bool fpsblock,vsync;
+	bool window_mode;		//윈도우 모드(2007. 12. 15 추가)
+	RECT render_rect;		//윈도우 모드시 출력 영역
+	HWND hwnd;
+	void OnMove(int x, int y);
 
 	bool AddJobList(JobItem* p);
 	LPDIRECTDRAWSURFACE CreateSurface(DWORD width,DWORD height,bool sysmem);
@@ -126,7 +130,7 @@ public:
 	JDirectDrawImp();
 	virtual ~JDirectDrawImp();
 
-	virtual bool Initialize(uint devid,HWND hwnd,uint width,uint height,uint bpp,bool sysmem=false);
+	virtual bool Initialize(uint devid,HWND hwnd,uint width,uint height,uint bpp,bool sysmem=false, bool window_mode=FALSE);
 	virtual bool Cleanup();
 
 	int GetID(char* name);

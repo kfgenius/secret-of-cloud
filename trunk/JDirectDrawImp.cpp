@@ -90,14 +90,26 @@ JDirectDrawImp::~JDirectDrawImp()
 	GdiplusShutdown(ptr);
 }
 
-bool JDirectDrawImp::Initialize(uint devid,HWND hwnd,uint width,uint height,uint bpp,bool sysmem)
+bool JDirectDrawImp::Initialize(uint devid,HWND hwnd,uint width,uint height,uint bpp,bool sysmem,bool window_mode)
 {
 	if(devid>dd_devcount) return false;
 	if(lpDD) return false;
 	DDC(DirectDrawCreate(devid==0?NULL:&dd_devguids[devid],&lpDD,NULL));
 	DDC(lpDD->QueryInterface(IID_IDirectDraw7,(void**)&lpDD7));
-	DDC(lpDD->SetCooperativeLevel(hwnd,DDSCL_EXCLUSIVE|DDSCL_FULLSCREEN));
-	DDC(lpDD->SetDisplayMode(width,height,bpp));
+
+	//윈도우 모드일 때 아닐때
+	this->window_mode = window_mode;
+	if(window_mode)
+	{
+		this->hwnd = hwnd;
+		DDC(lpDD->SetCooperativeLevel(hwnd,DDSCL_NORMAL));
+		SetRect(&render_rect, 0, 0, width, height);
+	}
+	else
+	{
+		DDC(lpDD->SetCooperativeLevel(hwnd,DDSCL_EXCLUSIVE|DDSCL_FULLSCREEN));
+		DDC(lpDD->SetDisplayMode(width,height,bpp));
+	}
 
 	if(sysmem)
 	{
@@ -107,6 +119,15 @@ bool JDirectDrawImp::Initialize(uint devid,HWND hwnd,uint width,uint height,uint
 		ddsd.dwBackBufferCount=1;
 		ddsd.ddsCaps.dwCaps=DDSCAPS_PRIMARYSURFACE;
 		DDC(lpDD->CreateSurface(&ddsd,&lpDDPriSurface,NULL));
+
+		if(window_mode)
+		{
+			LPDIRECTDRAWCLIPPER pcClipper;
+			lpDD->CreateClipper( 0, &pcClipper, NULL );
+			pcClipper->SetHWnd( 0, hwnd );
+			lpDDPriSurface->SetClipper( pcClipper );
+			pcClipper->Release();
+		}
 
 		ddsd.dwFlags=DDSD_WIDTH|DDSD_HEIGHT|DDSD_CAPS;
 		ddsd.dwWidth=width;
@@ -157,18 +178,45 @@ bool JDirectDrawImp::Initialize(uint devid,HWND hwnd,uint width,uint height,uint
 bool JDirectDrawImp::Cleanup()
 {
 	Render(false);
-	if(lpDD)
+
+	bool clean = true;
+
+	if(lpDDBackSurface)
 	{
 		lpDDBackSurface->Release();
+		lpDDBackSurface = NULL;
+	}
+	else clean=false;
+
+	if(lpDDPriSurface)
+	{
 		lpDDPriSurface->Release();
-		for(int lp=0;lp<HASH_SIZE;lp++) if(table[lp])
-		{
-			delete table[lp];
-		}
+		lpDDPriSurface = NULL;
+	}
+	else clean=false;
+
+	for(int lp=0;lp<HASH_SIZE;lp++)
+	if(table[lp])
+	{
+		delete table[lp];
+		table[lp] = NULL;
+	}
+
+	if(lpDD7)
+	{
 		lpDD7->Release();
+		lpDD7=NULL;
+	}
+	else clean=false;
+
+	if(lpDD)
+	{
 		lpDD->Release();
-		return true;
-	} else return false;
+		lpDD = NULL;
+	}
+	else clean=false;
+
+	return clean;
 }
 
 int JDirectDrawImp::GetID(char* name)
@@ -641,6 +689,7 @@ bool JDirectDrawImp::Render(bool bDraw,bool bFlip)
 			{
 				DisableGraphics(joblist->surf1);
 				table[joblist->surf1]->GetSurface()->Release();
+				table[joblist->surf1]->GetSurface()->Release();	//한번 릴리즈하면 바로 메모리 공간을 내놓지 않아서 두번 요청
 				delete table[joblist->surf1];
 				table[joblist->surf1]=NULL;
 			}
@@ -780,6 +829,7 @@ bool JDirectDrawImp::Render(bool bDraw,bool bFlip)
 				EnableGraphics(joblist->surf1);
 				SelectObject(dctable[joblist->surf1],(HFONT)joblist->font);
 				SetTextColor(dctable[joblist->surf1],RGB(joblist->color.r,joblist->color.g,joblist->color.b));
+
 				::TextOut(dctable[joblist->surf1],joblist->point1.x,joblist->point1.y,joblist->text,strlen(joblist->text));
 			}
 			free(joblist->text);
@@ -933,29 +983,43 @@ bool JDirectDrawImp::Render(bool bDraw,bool bFlip)
 	if(bDraw && bDrew && bFlip || !fpsblock && bFlip)
 	{
 		DisableGraphics(backbufferkey);
-		if(bProxy)
-		{
-			RECT r={0,0,screen_width,screen_height};
-			if(vsync) lpDD->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN,NULL);
-			lasterr=lpDDPriSurface->BltFast(0,0,lpDDBackSurface,&r,DDBLTFAST_WAIT|DDBLTFAST_NOCOLORKEY);
-		} else {
-			lpDDPriSurface->Flip(NULL,DDFLIP_WAIT);
-		}
 
-		while(1)
+		//윈도우 모드 출력
+		if(window_mode)
 		{
-			if (lasterr == DD_OK)
+			if(vsync) lpDD->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN,NULL);
+			lasterr=lpDDPriSurface->Blt( &render_rect, lpDDBackSurface, NULL, DDBLT_WAIT, NULL );
+			//서페이스 리스톨
+			if (lasterr == DDERR_SURFACELOST)
+				lasterr = lpDDPriSurface->Restore();
+		}
+		//전체화면 출력
+		else
+		{
+			if(bProxy)
 			{
-				break ;
+				RECT r={0,0,screen_width,screen_height};
+				if(vsync) lpDD->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN,NULL);
+				lasterr=lpDDPriSurface->BltFast(0,0,lpDDBackSurface,&r,DDBLTFAST_WAIT|DDBLTFAST_NOCOLORKEY);
+			} else {
+				lpDDPriSurface->Flip(NULL,DDFLIP_WAIT);
 			}
 
-			if (lasterr == DDERR_SURFACELOST)
+			while(1)
 			{
-				lasterr = lpDDPriSurface->Restore();
-
-				if (lasterr != DD_OK)
+				if (lasterr == DD_OK)
 				{
 					break ;
+				}
+
+				if (lasterr == DDERR_SURFACELOST)
+				{
+					lasterr = lpDDPriSurface->Restore();
+
+					if (lasterr != DD_OK)
+					{
+						break ;
+					}
 				}
 			}
 		}
@@ -1106,3 +1170,27 @@ HRESULT JDirectDrawImp::GetLastError()
 			break;
 
 */
+
+/*창 모드 추가*/
+void JDirectDrawImp::OnMove(int x, int y)
+{
+	if(!window_mode)return;
+
+	JPictureInfo info;
+	GetPictureInfo("Back Buffer", &info);
+
+	//서페이스 위치 재설정
+	LONG ws=WS_OVERLAPPEDWINDOW|WS_VISIBLE;
+	ws &= ~WS_THICKFRAME;
+	ws &= ~WS_MAXIMIZEBOX;
+
+	RECT crt;
+	SetRect(&crt, 0, 0, info.GetWidth(), info.GetHeight());
+	AdjustWindowRect(&crt, ws, FALSE);
+
+	RECT m_rcClient;
+	GetWindowRect(hwnd, &m_rcClient);
+	int window_x=m_rcClient.left - crt.left;
+	int window_y=m_rcClient.top - crt.top;
+	SetRect(&render_rect, window_x, window_y, window_x+info.GetWidth(), window_y+info.GetHeight());
+}

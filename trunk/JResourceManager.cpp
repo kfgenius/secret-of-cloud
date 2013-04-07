@@ -1,6 +1,8 @@
 #include "JResourceManagerImp.h"
 
 #include <string.h>
+#include <stdio.h>
+#include <Ole2.h>
 
 JResourceManager* CreateDXResourceManager(JDirectDraw* pdd)
 {
@@ -193,8 +195,6 @@ struct sounddata
 	DWORD loop;
 };
 
-#include <stdio.h>
-
 bool JResourceManagerImp::LoadResource(char* filename)
 {
 #	define EXIT { istream->Release(); return false; }
@@ -202,19 +202,6 @@ bool JResourceManagerImp::LoadResource(char* filename)
 	if(!istream->Loaded()) EXIT;
 	DWORD sign;
 	istream->Read(&sign,4,NULL);
-
-	//경로 기억
-	char path[128];
-	path[0] = NULL;
-	
-	for(int i = strlen(filename) - 1; i >= 1; --i)
-	{
-		if(filename[i] == '\\')
-		{
-			strncpy(path, filename, i + 1);
-			path[i + 1] = NULL;
-		}
-	}
 
 	DWORD ptr=4;
 	STATSTG stat;
@@ -250,35 +237,33 @@ bool JResourceManagerImp::LoadResource(char* filename)
 					color.color=pdt.colorkey;
 					info.SetColorKey(color);
 				}
+				//istream->EmulateSize(dt.size-sizeof(pdt),dt.filename);
 
-				//Windows7에서는 GDI+ 라이브러리의 스트림으로부터 이미지 생성이 에러나므로 이것으로 대처한다.
-				FILE* fp;
-				char filename[128];
-				strcpy(filename, path);
-				strcat(filename, dt.filename);
-
-				if(fp = fopen(filename, "rb"))
+				size_t imageSize = dt.size-sizeof(pdt);
+				void* m_hBuffer  = GlobalAlloc(GMEM_MOVEABLE, imageSize);
+				if (m_hBuffer)
 				{
-					fclose(fp);
-					dd->LoadPicture(dt.name, filename, &info, pdt.sysmem!=0);
-				}
-				else
-				{
-					//버퍼 생성, 읽기
-					char* buffer = new char[dt.size - sizeof(pdt)];
-
-					istream->Read((void*)buffer, dt.size - sizeof(pdt), NULL);
-
-					if(fp = fopen(filename, "wb"))
+					void* pBuffer = GlobalLock(m_hBuffer);
+					if (pBuffer)
 					{
-						fwrite(buffer, sizeof(char), dt.size - sizeof(pdt), fp); 
-						fclose(fp);
+						istream->Read(pBuffer, imageSize, NULL);
 
-						dd->LoadPicture(dt.name, filename, &info, pdt.sysmem!=0);
+						IStream* pStream = NULL;
+						if (CreateStreamOnHGlobal(m_hBuffer, FALSE, &pStream) == S_OK)
+						{
+							dd->LoadPicture(dt.name, pStream, &info,pdt.sysmem!=0);
+							pStream->Release();
+						}
+
+						GlobalUnlock(m_hBuffer);
 					}
 
-					delete[] buffer;
+					GlobalFree(m_hBuffer);
+					m_hBuffer = NULL;
 				}
+
+				//dd->LoadPicture(dt.name,istream,&info,pdt.sysmem!=0);
+				//istream->EmulateSize(0);
 			}
 			break;
 		}
@@ -298,13 +283,17 @@ bool JResourceManagerImp::UnloadResource(char* filename)
 	DWORD sign;
 	istream->Read(&sign,4,NULL);
 	if(sign!=0x4b4e4843) EXIT;
+
 	DWORD ptr=4;
 	STATSTG stat;
 	istream->Stat(&stat,STATFLAG_NONAME);
 	while(1)
 	{
 		chunkdata dt;
-		istream->Read(&dt,sizeof(dt),NULL);
+		ULONG read;
+		istream->Read(&dt,sizeof(dt),&read);
+		if(read!=sizeof(dt)) break;
+
 		switch(dt.type)
 		{
 		case 0: // data
@@ -318,7 +307,7 @@ bool JResourceManagerImp::UnloadResource(char* filename)
 			dd->DeleteSurface(dt.name);
 			break;
 		}
-		if((ptr+=dt.size)>=stat.cbSize.QuadPart) break;
+		ptr+=dt.size+sizeof(chunkdata);
 		istream->Seek(cv64(ptr),STREAM_SEEK_SET,NULL);
 	}
 	istream->Release();

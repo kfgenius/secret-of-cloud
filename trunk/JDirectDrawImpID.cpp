@@ -2,6 +2,8 @@
 
 #pragma warning(disable:4244)
 
+#define ERROR_CHECK		if(idx < 0 || idx >= HASH_SIZE)return false; if(!table[idx]) return false
+
 static int GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
 {
 	UINT num=0; // number of image encoders
@@ -35,7 +37,7 @@ static int GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
 
 bool JDirectDrawImp::SavePicture(int idx,char* type,char* filename)
 {
-	if(!table[idx]) return false;
+	ERROR_CHECK;
 	Render(true);
 
 	DisableGraphics(idx);
@@ -60,7 +62,7 @@ bool JDirectDrawImp::SavePicture(int idx,char* type,char* filename)
 
 bool JDirectDrawImp::GetPictureInfo(int idx,JPictureInfo* buffer)
 {
-	if(!table[idx]) return false;
+	ERROR_CHECK;
 
 	*buffer=*table[idx];
 	return true;
@@ -68,7 +70,7 @@ bool JDirectDrawImp::GetPictureInfo(int idx,JPictureInfo* buffer)
 
 bool JDirectDrawImp::SetPictureInfo(int idx,JPictureInfo* buffer)
 {
-	if(!table[idx]) return false;
+	ERROR_CHECK;
 
 	JobItem* p=new JobItem;
 	p->type=JobItem::SetPictureInfo;
@@ -80,7 +82,7 @@ bool JDirectDrawImp::SetPictureInfo(int idx,JPictureInfo* buffer)
 
 bool JDirectDrawImp::RedrawSurface(int idx)
 {
-	if(!table[idx]) return false;
+	ERROR_CHECK;
 
 	JobItem* p=new JobItem;
 	p->type=JobItem::RedrawSurface;
@@ -91,7 +93,7 @@ bool JDirectDrawImp::RedrawSurface(int idx)
 
 bool JDirectDrawImp::DeleteSurface(int idx)
 {
-	if(!table[idx]) return false;
+	ERROR_CHECK;
 
 	JobItem* p=new JobItem;
 	p->type=JobItem::DeleteSurface;
@@ -221,8 +223,6 @@ bool JDirectDrawImp::Blur(int iddest,int idsrc,int px,int py,LPRECT pRect,BlurSi
 
 bool JDirectDrawImp::DrawText(int idx,char* szText,JFont font,LPRECT pRect,JColor color)
 {
-	if(!table[idx]) return false;
-
 	JobItem* p=new JobItem;
 	p->type=JobItem::DrawText;
 	p->surf1=idx;
@@ -240,8 +240,6 @@ bool JDirectDrawImp::DrawText(int idx,char* szText,JFont font,LPRECT pRect,JColo
 
 bool JDirectDrawImp::DrawText(int idx,char* szText,JFont font,int px,int py,JColor color)
 {
-	if(!table[idx]) return false;
-
 	JobItem* p=new JobItem;
 	p->type=JobItem::DrawSingleLineText;
 	p->surf1=idx;
@@ -256,8 +254,6 @@ bool JDirectDrawImp::DrawText(int idx,char* szText,JFont font,int px,int py,JCol
 
 bool JDirectDrawImp::DrawLine(int idx,JBrush pBrush,int sx,int sy,int ex,int ey,float width)
 {
-	if(!table[idx]) return false;
-
 	JobItem* p=new JobItem;
 	p->type=JobItem::DrawLine;
 	p->surf1=idx;
@@ -273,8 +269,6 @@ bool JDirectDrawImp::DrawLine(int idx,JBrush pBrush,int sx,int sy,int ex,int ey,
 
 bool JDirectDrawImp::DrawRect(int idx,JBrush pBrush,LPRECT pRect,float width)
 {
-	if(!table[idx]) return false;
-
 	JobItem* p=new JobItem;
 	p->type=JobItem::DrawRect;
 	p->surf1=idx;
@@ -290,8 +284,6 @@ bool JDirectDrawImp::DrawRect(int idx,JBrush pBrush,LPRECT pRect,float width)
 
 bool JDirectDrawImp::DrawPolygon(int idx,JBrush pBrush,int* ppx,int* ppy,int pcount,float width)
 {
-	if(!table[idx]) return false;
-
 	JobItem* p=new JobItem;
 	p->type=JobItem::DrawPolygon;
 	p->surf1=idx;
@@ -308,8 +300,6 @@ bool JDirectDrawImp::DrawPolygon(int idx,JBrush pBrush,int* ppx,int* ppy,int pco
 
 bool JDirectDrawImp::DrawEllipse(int idx,JBrush pBrush,LPRECT pRect,float width)
 {
-	if(!table[idx]) return false;
-
 	JobItem* p=new JobItem;
 	p->type=JobItem::DrawEllipse;
 	p->surf1=idx;
@@ -325,8 +315,6 @@ bool JDirectDrawImp::DrawEllipse(int idx,JBrush pBrush,LPRECT pRect,float width)
 
 bool JDirectDrawImp::DrawPie(int idx,JBrush pBrush,LPRECT pRect,float fStartAngle,float fSweepAngle,float width)
 {
-	if(!table[idx]) return false;
-
 	JobItem* p=new JobItem;
 	p->type=JobItem::DrawPie;
 	p->surf1=idx;
@@ -345,7 +333,6 @@ bool JDirectDrawImp::DrawPie(int idx,JBrush pBrush,LPRECT pRect,float fStartAngl
 bool JDirectDrawImp::GetPixel(int idx,int px,int py,JColor* pColor)
 {
 	Render(true);
-	if(!table[idx]) return false;
 	if(!pColor) return false;
 
 	DisableGraphics(idx);
@@ -368,8 +355,6 @@ bool JDirectDrawImp::GetPixel(int idx,int px,int py,JColor* pColor)
 
 bool JDirectDrawImp::SetPixel(int idx,int px,int py,JColor pColor)
 {
-	if(!table[idx]) return false;
-
 	JobItem* p=new JobItem;
 	p->type=JobItem::SetPixel;
 	p->surf1=idx;

@@ -25,6 +25,8 @@ LRESULT CALLBACK WndProc(HWND wnd,UINT msg,WPARAM wParam,LPARAM lParam);
 
 #include "data.h"
 
+bool window_mode = true;
+
 //바람길 선택
 int SelectLine(int start)
 {
@@ -46,7 +48,7 @@ int SelectLine(int start)
 	int selected_line=0;
 	int airline_start=0;
 
-	while(1)
+	while(gameover)
 	{
 		if(PeekMessage(&msg,NULL,0,0,PM_NOREMOVE))
 		{
@@ -163,7 +165,7 @@ int Fight(int player1, int player2)
 	}
 
 	int select=0;
-	while(1)
+	while(gameover)
 	{
 		if(PeekMessage(&msg,NULL,0,0,PM_NOREMOVE))
 		{
@@ -713,12 +715,13 @@ void MakeGlass()
 	}
 }
 
-int main()
+//int main()
+int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstancem, LPSTR lpCmdLine, int nShowCmd)
 {
 	jdd=CreateDirectDraw();
 	jre=CreateDXResourceManager(jdd);
 
-	HINSTANCE hInstance=(HINSTANCE)0x00400000;
+	//HINSTANCE hInstance=(HINSTANCE)0x00400000;
 
 	WNDCLASS wc={0};
 	wc.hIcon=LoadIcon(hInstance,"CLOUD.ico");
@@ -727,11 +730,27 @@ int main()
 	wc.hInstance=hInstance;
 	wc.style=CS_HREDRAW|CS_VREDRAW;
 	wc.hbrBackground=(HBRUSH)GetStockObject(BLACK_BRUSH);
-	wc.lpszClassName="Demo";
+	wc.lpszClassName="Game";
 	RegisterClass(&wc);
-	
-	hwnd=CreateWindow("Demo","큰구름의 수수께끼",WS_POPUP|WS_VISIBLE,0,0,640,480,NULL,NULL,hInstance,NULL);
-    ShowCursor( FALSE );
+
+	if(window_mode)
+	{
+		LONG ws=WS_OVERLAPPEDWINDOW|WS_VISIBLE;
+		ws &= ~WS_THICKFRAME;
+		ws &= ~WS_MAXIMIZEBOX;
+
+		RECT crt;
+		SetRect(&crt, 0, 0, SCREEN_X, SCREEN_Y);
+		AdjustWindowRect(&crt, ws, FALSE);
+
+		hwnd = CreateWindow("Game", "큰구름의 수수께끼", ws, 100, 100, crt.right - crt.left, crt.bottom - crt.top, NULL, NULL, hInstance, NULL);
+		ShowCursor( TRUE );
+	}
+	else
+	{
+		hwnd=CreateWindow("Game","큰구름의 수수께끼",WS_POPUP|WS_VISIBLE,0,0,640,480,NULL,NULL,hInstance,NULL);
+		ShowCursor( FALSE );
+	}
 
 	if ( DirectSoundCreate(NULL,&SoundOBJ,NULL) == DS_OK )
 	{
@@ -756,9 +775,17 @@ int main()
 		fclose(fp);
 	}
 
-	if(m_640)jdd->Initialize(NULL,hwnd,640,480,16,true);
-		else jdd->Initialize(NULL,hwnd,320,240,16,true);
+	//if(m_640)jdd->Initialize(NULL,hwnd,640,480,16,true);
+	//	else jdd->Initialize(NULL,hwnd,320,240,16,true);
+	jdd->Initialize(NULL,hwnd,SCREEN_X,SCREEN_Y,16,true,window_mode);
 	
+	//윈도우창 이동
+	if(window_mode)
+	{
+		jdd->OnMove(100, 100);
+		SetCursor(LoadCursor(0, IDC_ARROW));
+	}
+
 	//초기화
 	backbuffer=jdd->GetBackBuffer();
 	font20=jdd->CreateFont("굴림체",20,true,false,false,false,false);
@@ -837,7 +864,7 @@ int main()
 
 	m_sv.sw[SW_QUIT]=true;
 	bool end=false;
-	while(!end)
+	while(!end && !gameover)
 	{
 		//게임 진행
 		int cx=5, cy=2;
@@ -1846,6 +1873,18 @@ LRESULT CALLBACK WndProc(HWND wnd,UINT msg,WPARAM wParam,LPARAM lParam)
     {
 		case MM_MCINOTIFY    :   if ( ReplayFlag && wParam == MCI_NOTIFY_SUCCESSFUL ) _MidiReplay();
 								break;
+
+		case WM_MOVE		 :	if(jdd)jdd->OnMove(LOWORD(lParam), HIWORD(lParam));
+								break;
+		
+		case WM_SYSCOMMAND	 :  //닫기 메시지 가로채기
+								if(wParam==SC_CLOSE)
+								{
+									wParam=0;
+									gameover=TRUE;
+								}
+								break;
+
 	}
 
 	return DefWindowProc(wnd,msg,wParam,lParam);
