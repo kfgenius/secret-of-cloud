@@ -8,9 +8,14 @@
 
 #define FILE_MAX 3
 
+#define SCREEN_X 640
+#define SCREEN_Y 480
+
 char* bgm[]={"Sound\\Hondon.mid","Sound\\Juraona.mid","Sound\\Book.mid","Sound\\Sword.mid","Sound\\Horn.mid","Sound\\6th.mid","Sound\\Title.mid","Sound\\Gamble.mid","Sound\\Battle.mid","Sound\\Fly.mid","Sound\\End.mid"};
 char answer[9];
 int answer_max;
+
+bool gameover = false;
 
 #define _GetKeyState( vkey ) HIBYTE(GetAsyncKeyState( vkey ))
 
@@ -141,6 +146,9 @@ void Pause()
 //320x240화면을 2배로 찍기
 void Render()
 {
+	RECT rect;
+	SetRect(&rect, 0, 0, SCREEN_X, SCREEN_Y);
+	jdd->DrawPicture(backbuffer, backbuffer, 0, 0, &rect);
 	jdd->Render();
 }
 
@@ -782,7 +790,7 @@ int CDlg::TextPrint(char* content, int y, int back)
 
 	sp=SNR_START;
 	int n_of_e=0, tp=0;	//줄바꿈 횟수, 출력하는 단어
-	while(1)
+	while(gameover)
 	{
 		if(PeekMessage(&msg,NULL,0,0,PM_NOREMOVE))
 		{

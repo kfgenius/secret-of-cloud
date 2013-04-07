@@ -128,7 +128,7 @@ struct JDirectDraw
 
 	virtual ~JDirectDraw() {}
 
-	virtual bool Initialize(uint devid,HWND hwnd,uint width,uint height,uint bpp,bool sysmem=false) PURE;
+	virtual bool Initialize(uint devid,HWND hwnd,uint width,uint height,uint bpp,bool sysmem=false,bool window_mode=FALSE) PURE;
 	virtual bool Cleanup() PURE;
 
 	virtual int GetID(char* name) PURE;
@@ -201,6 +201,9 @@ struct JDirectDraw
 	virtual bool Render() PURE;
 
 	virtual HRESULT GetLastError() PURE;
+
+	//Ã¢¸ðµå
+	virtual void OnMove(int x, int y) PURE;
 };
 
 JDirectDraw* CreateDirectDraw();

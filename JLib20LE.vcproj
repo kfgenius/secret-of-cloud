@@ -4,6 +4,7 @@
 	Version="8.00"
 	Name="Cloud"
 	ProjectGUID="{BA33E705-7715-4E9B-BA96-826015BC2799}"
+	RootNamespace="Cloud"
 	>
 	<Platforms>
 		<Platform
@@ -70,14 +71,14 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/force:multiple"
-				AdditionalDependencies="odbc32.lib odbccp32.lib gdiplus.lib ddraw.lib ddeffects3.lib dxerr9.lib dsound.lib amstrmid.lib dxguid.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib gdiplus.lib ddraw.lib ddeffects3.lib dxerr9.lib dsound.lib dxguid.lib winmm.lib"
 				OutputFile=".\Debug/JLib20LE.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				IgnoreDefaultLibraryNames="libc,libcd"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/JLib20LE.pdb"
-				SubSystem="1"
+				SubSystem="2"
 				TargetMachine="1"
 			/>
 			<Tool
