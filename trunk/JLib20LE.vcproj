@@ -171,7 +171,7 @@
 				IgnoreDefaultLibraryNames="LIBC.lib"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Release/cloud.pdb"
-				SubSystem="1"
+				SubSystem="2"
 				TargetMachine="1"
 			/>
 			<Tool
